@@ -67,6 +67,7 @@ public class Riddler {
             char letter = (char) charCode;
             // Add letter to new string, then remove binary value from original string
             decrypted = decrypted + letter;
+            // Cut the string
             encrypted = encrypted.substring(8);
 
         }
