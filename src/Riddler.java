@@ -77,9 +77,12 @@ public class Riddler {
 
     public String decryptFour(String encrypted) {
         String decrypted = "";
-
-        // TODO: Complete the decryptFour() function.
-
+        // Loop through each emoji
+        int length = encrypted.length();
+        for (int i = 0; i < length; i++) {
+            int dingbat = encrypted.codePointAt(i);
+            char letter = (char) (dingbat - 9951);
+        }
         return decrypted;
     }
 }
