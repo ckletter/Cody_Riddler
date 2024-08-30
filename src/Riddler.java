@@ -6,54 +6,60 @@
  *
  * Completed by: YOUR NAME HERE
  */
+import java.util.ArrayList;
 public class Riddler {
 
     public String decryptOne(String encrypted) {
         String decrypted = "";
         int length = encrypted.length();
+        int shiftValue = 9;
         // Loop through the entire string, one number at a time
         for (int i = 0; i < length; i++) {
             char letter = encrypted.charAt(i);
-            // If not a letter, do not perform shift
-            if (!Character.isLetter(letter)) {
-                continue;
+            // If letter is uppercase, perform caesar shift for uppercase
+            if (Character.isUpperCase(letter)) {
+                char shifted = (char) ((letter - 'A' + shiftValue) % 26 + 'A');
+                decrypted = decrypted + shifted;
             }
-            // Get integer value of current letter
-            int letterVal = (int) letter;
-            System.out.println("Letter before: " + letter);
-            char newLetter;
-            if (letterVal + 9 > 122) {
-                newLetter = (char) (letterVal + 9 - 122 + 96);
+            else if (Character.isLowerCase(letter)) {
+                char shifted = (char) ((letter - 'a' + shiftValue) % 26 + 'a');
+                decrypted = decrypted + shifted;
             }
-            else if (letterVal + 9 > 90) {
-                newLetter = (char) ((letterVal + 9 - 90 + 64));
-            }
+            // If character is not a letter, add character to decrypted string as is
             else {
-                newLetter = (char) (letterVal + 9);
+                decrypted = decrypted + letter;
             }
-            System.out.println(newLetter);
-            // Perform a caesar shift on the current letter index, then add to decrypted
-            decrypted = decrypted + (Character.toString((char) (letterVal + 9))).toString();
         }
-
         return decrypted;
     }
 
     public String decryptTwo(String encrypted) {
         String decrypted = "";
-        // Loop through entire string until empty
-        while (!encrypted.isEmpty()) {
-            // Find next space
-            int nextSpace = encrypted.indexOf(" ");
-            // Get the ascii value of the next ascii digits
-            int asciiVal = Integer.parseInt(encrypted.substring(0, nextSpace));
-            // Convert the ascii value to a letter
-            String letter = Character.toString((char) asciiVal);
-            // Add letter to new string, then remove ascii value from original string
-            decrypted = decrypted + letter;
-            encrypted = encrypted.substring(nextSpace + 1);
+        // Create copy of string
+        String copy = encrypted;
+        int spaceIndex = copy.indexOf(" ");
+        boolean spaceInString = (spaceIndex != -1);
+        int count = 0;
+        // Count spaces in copy, chopping off from string as you go through
+        while (spaceInString) {
+            count++;
+            // Cut off copy to after space
+            copy = copy.substring(spaceIndex + 1);
+            spaceIndex = copy.indexOf(" ");
+            spaceInString = (spaceIndex != -1);
         }
-
+        // Initialize array to contain all ascii values
+        String[] arr = new String[count + 1];
+        // Split string by delimeter space and add to new array
+        arr = encrypted.split(" ");
+        // Loop through each ascii value in the list
+        for (String asciiVal : arr) {
+            int num = Integer.parseInt(asciiVal);
+            // Convert the ascii value to a letter
+            char letter = (char) num;
+            // Add letter to new string
+            decrypted = decrypted + letter;
+        }
         return decrypted;
     }
 
@@ -61,15 +67,22 @@ public class Riddler {
         String decrypted = "";
         // Loop through entire string until empty
         while (!encrypted.isEmpty()) {
-            // Get the next 8 digits, convert to integer
-            int charCode = Integer.parseInt(encrypted.substring(0, 8), 2);
+            // Get the next 8 digits, convert to integer using bit-shifting
+            String binaryString = encrypted.substring(0, 8);
+            int length = binaryString.length();
+            int sum = 0;
+            // Loop through each number in the byte
+            for (int i = 0; i < length; i++) {
+                // Add value of that 1 to ongoing sum
+                if (binaryString.charAt(i) == '1') {
+                    sum += 1 << length - i - 1;
+                }
+            }
             // Get the letter value of the binary number
-            char letter = (char) charCode;
+            char letter = (char) sum;
             // Add letter to new string, then remove binary value from original string
             decrypted = decrypted + letter;
-
             encrypted = encrypted.substring(8);
-
         }
 
         return decrypted;
@@ -80,8 +93,12 @@ public class Riddler {
         // Loop through each emoji
         int length = encrypted.length();
         for (int i = 0; i < length; i++) {
-            int dingbat = encrypted.codePointAt(i);
-            char letter = (char) (dingbat - 9951);
+            // Get unicode value of emoji
+            int unicode = encrypted.codePointAt(i);
+            // perform caesar shift on unicode value, then convert to letter
+            char letter = (char) (unicode - 9984 + 'A');
+            // Add char to string
+            decrypted = decrypted + letter;
         }
         return decrypted;
     }
